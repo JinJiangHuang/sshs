@@ -7,16 +7,21 @@ import java.io.IOException;
 import org.apache.log4j.Logger;
 
 import com.teracloud.sshs.handler.MessageHandler;
-import com.teracloud.sshs.handler.impl.SystemOutHandler;
 import com.teracloud.sshs.socket.SSHServerSocket;
 
 
 public class Server {
+	//Server status
+	public static final int STARTED = 1;
+	public static final int WAITTING = 0;
+	public static final int SHUTDOWNED = -1;
+	public static final int UNCONNECTED = -2;
+	
 	private static Logger logger = Logger.getLogger(Server.class);
 	
 	private SSHServerSocket socket;
 	private MessageHandler handler;
-	
+	private int status = WAITTING;
 	
 	public Server(MessageHandler handler) {
 		socket = new SSHServerSocket();
@@ -38,44 +43,63 @@ public class Server {
 				char[] cbuf = new char[1024];
 				reader.read(cbuf);
 				buf = new String(cbuf);
-				while(!Constant.QUIT_SSH.equals(buf)){
-					if(buf != null){
-						server.getHandler().execute(buf);
-					}
+				while(buf != null && status == STARTED){
+					server.getHandler().execute(buf);
+					
 					cbuf = new char[1024];
 					reader.read(cbuf);
 					buf = new String(cbuf);
 				}
 				reader.close(); // 关闭Socket输入流
-			} catch (IOException e) {
-				e.printStackTrace();
-				try {
-					reader.close();
-					server.shudown();
-				} catch (IOException e1) {} 
+			} catch (Exception e) {
+				logger.info("服务端消息监听线程异常，原因："+e.getMessage());
+			}finally{
+				server.shutdown();
 			}
 		}
 	}
 	
+
+	private class ConnectListener implements Runnable{
+		private Server server;
+		public ConnectListener(Server server) {
+			this.server = server;
+		} 
+		public void run() {
+			while(true){
+				try{
+				    server.socket.getSocket().sendUrgentData(0xff);
+				    Thread.sleep(1000);//1秒
+				}catch(Exception e){
+					status = UNCONNECTED;
+					logger.info("socket连接已断开");
+					break;
+				}
+			}
+		}
+	}
 	
 	public void start(){
 		socket.accept();
 		new Thread(new MessageListener(this)).start();
-		logger.info("开始监听终端输出和服务端输入");
+		logger.info("开始监听客户端输入");
+		new Thread(new ConnectListener(this)).start();
+		logger.info("开始监听socket连接");
+		status = STARTED;
+		logger.info("服务端已启动");
 	}
 	
 	public void shell(String shell){
 		socket.send(shell);
 	}
-	public void shudown(){
-		socket.send(Constant.QUIT_SSH);
-		socket.close();
-	}
-	
-	
-	public static void main(String args[]) throws InterruptedException {
-		Server server = new Server(new SystemOutHandler());
-		server.start();
+	public synchronized void shutdown(){
+		if(status != SHUTDOWNED){
+			if(socket != null){
+				socket.close();
+			}
+			status = SHUTDOWNED;
+			logger.info("关闭服务端");
+		}
 	}
 	
 	public MessageHandler getHandler() {

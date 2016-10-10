@@ -24,7 +24,7 @@ public abstract class SSHSocket {
 	}	
 	
 	public void close(){
-		logger.info("关闭客户端socket连接");
+		logger.info("关闭socket连接");
 		if(socketWriter != null){
 			socketWriter.close();
 		}
