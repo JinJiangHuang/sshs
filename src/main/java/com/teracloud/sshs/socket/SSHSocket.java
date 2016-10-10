@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 public abstract class SSHSocket {
 	
 	private static Logger logger = Logger.getLogger(SSHSocket.class);
+	
 	protected int port;
 	protected Socket socket;
 	protected PrintWriter socketWriter;
@@ -23,7 +24,7 @@ public abstract class SSHSocket {
 	}	
 	
 	public void close(){
-		logger.info("关闭SSHSocket");
+		logger.info("关闭客户端socket连接");
 		if(socketWriter != null){
 			socketWriter.close();
 		}

@@ -10,4 +10,6 @@ public class Constant {
 	//提示
 	public static final String SUCCESS = "success";
 	public static final String OPEN_TERMINAL_FAILURE = "open_terminal_failure";
+
+	
 }

@@ -16,7 +16,6 @@ public class Server {
 	
 	private SSHServerSocket socket;
 	private MessageHandler handler;
-	private Server server; 
 	
 	
 	public Server(MessageHandler handler) {

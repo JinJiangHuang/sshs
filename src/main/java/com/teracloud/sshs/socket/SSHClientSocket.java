@@ -23,14 +23,14 @@ public class SSHClientSocket extends SSHSocket{
 	
 	public void connect() throws SocketConnectException{
 		try {
-			logger.info("开始建立socket连接...");
+			logger.info("服务端 地址:"+server+"\t端口："+port);
 			socket = new Socket(server, port);
 			socketWriter = new PrintWriter(socket.getOutputStream());
 			socketReader = new BufferedReader(new InputStreamReader(
 					socket.getInputStream(),"utf-8"));
-			logger.info("socket连接建立完毕<<");
+			logger.info("与服务端建立socket连接成功");
 		}catch (Exception e) {
-			e.printStackTrace();
+			logger.info("与服务端建立socket连接失败。原因:"+e.getMessage());
 			throw new SocketConnectException();
 		}
 	}

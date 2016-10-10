@@ -11,6 +11,8 @@ import java.io.PipedOutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import com.jcraft.jsch.ChannelShell;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
@@ -20,6 +22,7 @@ public class Terminal {
 	
 	private static Properties config = new Properties();
 	private static int timeout = 60000000;
+	private static Logger logger = Logger.getLogger(Terminal.class);
 	static{
 		config.put("StrictHostKeyChecking", "no");
 	}
@@ -66,7 +69,7 @@ public class Terminal {
 		shellOut.connect(shellOutReciver);
 		
 		shell(shellIn,shellOut);
-		
+		logger.info("终端已启动");
 		
 	}
 	
