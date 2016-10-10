@@ -25,6 +25,7 @@ public class SSHClientSocket extends SSHSocket{
 		try {
 			logger.info("服务端 地址:"+server+"\t端口："+port);
 			socket = new Socket(server, port);
+			socket.setOOBInline(false);
 			socketWriter = new PrintWriter(socket.getOutputStream());
 			socketReader = new BufferedReader(new InputStreamReader(
 					socket.getInputStream(),"utf-8"));

@@ -22,6 +22,7 @@ public class Client {
 	public static final int STARTED = 1;
 	public static final int WAITTING = 0;
 	public static final int SHUTDOWNED = -1;
+	public static final int UNCONNECTED = -2;
 	
 	private static Logger logger = Logger.getLogger(Client.class);
 	
@@ -47,18 +48,22 @@ public class Client {
 		try {
 			socket = new SSHClientSocket(conf.getSocketHost(),conf.getSocketPort());
 			socket.connect();
-		
 			terminal = new Terminal(conf.getSshHost(), conf.getSshPort(), conf.getSshUsr(),conf.getSshPwd());
 			terminal.open();
+			status = STARTED;
+			logger.info("客户端启动完成");
 			
 			new Thread(new MessageListener(this)).start();
 			logger.info("终端输入监听线程启动");
 			new Thread(new ResultListener(this)).start();
 			logger.info("终端输出监听线程启动");
+			new Thread(new ConnectListener(this)).start();
+			logger.info("socket监听线程启动");
 			
-			logger.info("客户端启动完成");
 			
-			status = STARTED;
+			
+			
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 			socket.send("\n"+Constant.OPEN_TERMINAL_FAILURE+"\n");
@@ -72,7 +77,7 @@ public class Client {
 	 * 会关闭SSHClientSocket和Terminal,并设置客户端状态为 SHUTDOWNED
 	 */
 	public synchronized void shutdown(){
-		if(status == STARTED){
+		if(status != SHUTDOWNED){
 			if(socket != null){
 				socket.close();
 			}
@@ -103,6 +108,7 @@ public class Client {
 				
 				while(!Constant.QUIT_SSH.equals(buf) 
 						&& buf != null && client.status == STARTED){
+					
 					terminal.in(buf);
 					cbuf = new char[1];
 					is.read(cbuf);
@@ -154,7 +160,24 @@ public class Client {
 			}
 		}
 	}
-	
+	private class ConnectListener implements Runnable{
+		private Client client;
+		public ConnectListener(Client client) {
+			this.client = client;
+		} 
+		public void run() {
+			while(true){
+				try{
+					client.socket.getSocket().sendUrgentData(0xFF);
+				    Thread.sleep(1000);//1秒
+				}catch(Exception e){
+					status = UNCONNECTED;
+					logger.info("socket连接已断开,原因:"+e.getMessage());
+					break;
+				}
+			}
+		}
+	}
 	
 }
 

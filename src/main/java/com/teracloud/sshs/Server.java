@@ -119,31 +119,3 @@ public class Server {
 	
 	
 }
-
-/*
-class ShellListener implements Runnable{
-	private PrintWriter os ;
-	private Server server;
-	
-	public ShellListener(Server server) {
-		this.server = server;
-		this.os = os;
-	}
-
-	public void run() {
-		BufferedReader sin = new BufferedReader(new InputStreamReader(
-										System.in));
-		try {
-			String line = sin.readLine();
-			while(!Constant.QUIT_SSH.equals(line)){
-				os.println(line);
-				os.flush();
-				line = sin.readLine();
-			}
-			os.close();
-			System.out.println("关闭连接");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-}*/
