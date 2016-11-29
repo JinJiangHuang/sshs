@@ -160,8 +160,6 @@ public class Terminal {
 		terminal.down();
 		Thread.sleep(2000);
 		System.out.println(terminal.out());*/
-		
-		
 	}
 
 	public PipedOutputStream getShellInReciver() {

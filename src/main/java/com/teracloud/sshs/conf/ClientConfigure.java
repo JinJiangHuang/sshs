@@ -10,7 +10,7 @@ public class ClientConfigure {
 	private int sshPort;
 	private String sshUsr;
 	private String sshPwd;
-	
+
 	
 	//sokcet配置
 	private String socketHost;

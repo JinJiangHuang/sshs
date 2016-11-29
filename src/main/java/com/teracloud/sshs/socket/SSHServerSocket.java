@@ -20,12 +20,17 @@ public class SSHServerSocket extends SSHSocket{
 		server();
 	}
 	
+	public SSHServerSocket(int port) {
+		this.port = port;
+		server();
+	}
+	
+	
 	private void server(){
 		try {
 			server = new ServerSocket(port);
 			port = server.getLocalPort();
 			logger.info("服务端开启socket，端口号："+port);
-	
 		} catch (IOException e) {
 			e.printStackTrace();
 			close();
@@ -43,9 +48,8 @@ public class SSHServerSocket extends SSHSocket{
 			socketWriter = new PrintWriter(new OutputStreamWriter(
 					socket.getOutputStream(), "utf-8"));
 		} catch (IOException e) {
-			e.printStackTrace();
 			close();
-			logger.info("服务端socket连接异常已关闭");
+			logger.info("服务端socket连接异常已关闭,原因："+e.getMessage());
 		}
 	}
 	/**
@@ -66,4 +70,6 @@ public class SSHServerSocket extends SSHSocket{
 	public void setServer(ServerSocket server) {
 		this.server = server;
 	}	
+	
+	
 }
