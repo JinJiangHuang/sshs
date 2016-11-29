@@ -1,6 +1,9 @@
 # Problem
+
 很多情况下我们想要通过ssh连接的机器都在局域网中，传统的ssh连接无法通过设置ip和端口号进行连接--因为局域网中的一般机器是无法直接访问的。
+
 #Solution
+
 如果你有一个公网上的服务器，并且你需要连接一台无法直接连接的局域网内的机器。那么下面这个思路会比较适合你。
 
 1. 公网服务器作为连接请求分发中心
@@ -13,11 +16,13 @@
 以上解决方案涉及到socket 编程和IO操作
 
 #Usage
+
 sshs 主要使用的两个类分别是服务端的使用的```Server```类和客户端（被连接的机器）使用的```Client```类。```sshs.properties```为默认配置文件。
 
 sshs 主要实现的是客户端机器打开终端、获取终端输入出流、与服务端建立socket和服务端获取socket输入出入流操作。不包含解决方案中的1,2步骤。因为这些操作需要调用sshs的使用者来完成
 
 ##basic connect process
+
 1. 服务端打开端口等待客户端建立socket连接
 
 ````
@@ -28,8 +33,12 @@ int port = server.getSocket().getPort();//获取soket端口号，客户端需要
 
 ````
 
+
 2.客户端根据用户名和密码打开本地终端，并根据服务器的地址和端口打开socket的连接
+
+
 ````
+
 String userName = "username";//linux用户名
 String password = "password";//linux用户密码
 String serverAddress = "localhost";//服务端地址
@@ -50,6 +59,14 @@ String shell = "ls";
 server.getSocket().send(shell);
 
 ````
+
+##configure
+
+```isLimitPort``` 是否限制开放端口。默认为false,不限制端口，```Server```类启动时自动分配socket端口号。
+
+```openPorts``` 开发的端口，在```isLimitPort```为```true```时有效。可以使用5000-6000或者5000,5001,5002,5003方式，也可以两种方式一起使用。
+
+
 #finally
 
 最后大家遇到任何相关问题都可以给我的邮箱```cw961590280@hotmail.com```发送邮件一起讨论。
